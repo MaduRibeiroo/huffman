@@ -28,8 +28,8 @@ Tree* novaArvore(Tree *esq, int simb, int freq, Tree *dir)
 	Tree *no = (Tree*)malloc(sizeof(Tree));
 	no->esq = esq;
 	no->dir = dir;
-	no->freq=freq;
-	no->simbolo=simb;
+	no->freq = freq;
+	no->simbolo = simb;
 	
 	return  no;
 }

@@ -4,7 +4,7 @@ struct TpTree{
 };typedef struct TpTree Tree;
 
 //Inicia a arvore
-void init(Tree **raiz){
+void initT(Tree **raiz){
 	*raiz=NULL;
 }
 
@@ -16,7 +16,7 @@ void novoNo(Tree **tree){
 }
 
 void CriaNo(Tree **tree, int freq, int simbolo){
-	novoNo(&8tree);
+	novoNo(&*tree);
 	(*tree)->frequencia = frequencia;
 	(*tree)->simbolo = simbolo;
 }
