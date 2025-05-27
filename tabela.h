@@ -114,3 +114,5 @@ void excluirTab(Tabela **tab){
 		free (aux);
 	}
 }
+
+//FALTA FAZER O EXIBIR TABELA 

@@ -145,14 +145,14 @@ void executar(){
 		switch(op){
 			case 'A':
 				system("cls");
-				exibirTabela(tab,1,1);
+				exibirTabela(tab,1,1); //falta fazer
 				gotoxy(1,1);
 				fflush(stdin);
 				getch();
 				break;
 			case 'B':
 				system("cls");
-				exibeArvore(raiz,-1);
+				exibirArv(raiz,-1);
 				gotoxy(1,1);
 				fflush(stdin);
 				getch();
@@ -161,7 +161,7 @@ void executar(){
 				system("cls");
 				printf("A frase decodificada foi:\n %s\n ",frase);
 				teste();
-				exibirTabela(tab,1,4);
+				exibirTabela(tab,1,4); //aqui
 				gotoxy(1,1);
 				fflush(stdin);
 				getch();
@@ -169,14 +169,14 @@ void executar(){
 			case 'D':
 				system("cls");
 				teste();
-				exibirTabela(tab,1,4);
+				exibirTabela(tab,1,4); //aqui
 				gotoxy(1,1);
 				fflush(stdin);
 				getch();
 				break;
 			case 'E':
 				system("cls");
-				printaEmPe(raiz,1,1);
+				exibirEmPe(raiz,1,1);
 				gotoxy(1,1);
 				fflush(stdin);
 				getch();
