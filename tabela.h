@@ -52,7 +52,9 @@ Tabela* criar(int simb,char palavra[30],unsigned char cod,int *tl)
 	t->prox=NULL;
 }
 
-void inserir(Tabela** t,int simb,char palavra[30],unsigned char cod,int freq,int *tl)
+
+//FAZER A BUSCA DENTRO DO INSERIR SAVOLDI CARALHO
+void inserir(Tabela** t,int *simb,char palavra[30],unsigned char cod,int freq)
 {
 	Tabela* aux=criar(simb,palavra,cod,tl);
 	*aux->freq=freq;
@@ -115,4 +117,4 @@ void excluirTab(Tabela **tab){
 	}
 }
 
-//FALTA FAZER O EXIBIR TABELA 
+//FALTA exibir tabela

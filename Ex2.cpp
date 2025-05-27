@@ -9,8 +9,6 @@
 #define TF 200
 
 char Menu(){
-	char Menu()
-{
 	int c,l;
 	char op;
 	do
@@ -42,7 +40,7 @@ char Menu(){
 		printf("OPCAO: ");
 		fflush(stdin);
 		op=toupper(getche());
-	}while(op!='A' && op!='B' && op!='C' && op!='D'  && op!='E' && op!='F' && op!=27 );
+	}while(op!='A' && op!='B' && op!='C' && op!='D'  && op!='E' && op!=27 );
 	return op;
 }
 

@@ -53,7 +53,7 @@ void exibirEmPe(Tree *raiz, int l, int c){
 	if(raiz != NULL){
 		int c_esq = contFilhos(raiz->esq);
 		float posicao_atual = c +4.3 *c_esq;
-		gotxy((int)posicao_atual, 1);
+		gotoxy((int)posicao_atual, 1);
 		if(raiz->frequencia == 0)
 			printf("(%d)", raiz -> simbolo);
 		else
