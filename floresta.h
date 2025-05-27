@@ -42,7 +42,7 @@ Floresta * novaFloresta(Tree* esq, int simb,int freq,Tree *dir)
 	return f;
 }
 
-void inserir(Tree *esq,Floresta **lista,int simb, int freq, Tree* dir)
+void inserirFloresta(Tree *esq,Floresta **lista,int simb, int freq, Tree* dir)
 {
 	Floresta *aux;
 	aux = novaFloresta(esq,simb,freq,dir); 

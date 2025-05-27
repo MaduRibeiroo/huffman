@@ -43,38 +43,69 @@ char isEmpty(Tabela *T)
 	return T == NULL;
 }
 
-Tabela* criar(int simb,char palavra[30],unsigned char cod,int *tl)
+
+Tabela * buscaPalavra(Tabela *t,char palavra[30])
+{
+	while(t!= NULL && strcmp(t->reg.palavra,palavra)!=0)
+		t=t->prox;
+	return t;
+}
+
+
+
+
+Tabela* criar(int simb,char palavra[30],unsigned char cod)
 {
 	Tabela *t=(Tabela*) malloc(sizeof(Tabela));
 	t->reg->cod.num= cod;
 	strcmp(t->reg->palavra,palavra);
-	t->reg=simb=tl;
+	t->reg=simb=simb;
 	t->prox=NULL;
 }
 
 
 //FAZER A BUSCA DENTRO DO INSERIR SAVOLDI CARALHO
-void inserir(Tabela** t,int *simb,char palavra[30],unsigned char cod,int freq)
+void inserirTabela(Tabela** t,int *simb,char palavra[30],unsigned char cod)
 {
-	Tabela* aux=criar(simb,palavra,cod,tl);
-	*aux->freq=freq;
-	*aux->prox=null;
-	tl++;
+	Tabela* aux=buscaPalavra(*t,palavra);
+	if(aux==NULL)
+	{
+		aux=criarLinhaTabela(simb++,palavra,cod);
+		*aux->freq=1;
+		*aux->prox=null;
+	}
+	else
+	{
+		aux->freq++;
+	}
 	if(*t == NULL)
 	{
 		*t=aux;
 	}
 	else
 	{
-		Tabela* pos=*t;
-		while(pos->prox!=null)
+		if((*t)->freq > aux->freq)
 		{
-			pos=pos->prox;
+			aux->prox=*t;
 		}
-		pos->prox=aux;
+		else
+		{
+			Tabela* pos=*t;
+			while(pos->prox!= NULL && pos->prox->freq < aux->freq )
+			{
+				pos=pos->prox;
+			}
+			aux->prox = pos->prox;
+			pos->prox=aux;
+		}
 	}
 }
 
+
+//
+// MUITO TRABALHO ARRUMAR ESSA POHA DAI EU FIZ NO MEU DIRETO ALI 
+ 
+/*
 void inserirTabelaOrdenado(Tabela **tab, Registro reg){
 	Tabela *aux, *ant, *nova;
 	nova = (Tabela*)malloc(sizeof(Tabela));
@@ -98,6 +129,7 @@ void inserirTabelaOrdenado(Tabela **tab, Registro reg){
 		}
 	}
 }
+*/
 
 char BuscarSimbolo(Tabela *tab,int simb,Tabela **aux){
 	*aux=tab;
