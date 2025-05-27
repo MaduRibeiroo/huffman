@@ -74,9 +74,6 @@ Tree * criaArvoreHuffman(Floresta **f)
 // CRIAR A FUNCAO PARA FAZER  A BOMBA DO ARQ BINARIO
 
 
-
-
-
 void gravarFrase(Tabela **tab, int *TL){
     char letra, palavra[30], aux[2];
     int i=0;
