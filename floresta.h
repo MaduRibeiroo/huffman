@@ -63,7 +63,6 @@ void inserir(Tree *esq,Floresta **lista,int simb, int freq, Tree* dir)
 	}
 }
 
-
 Tree* retira(Floresta **lista)
 {
 	Tree *aux = (*lista)->info;
@@ -72,6 +71,49 @@ Tree* retira(Floresta **lista)
 	free(*rm);
 	return aux;
 }
+
+void exibirArv(Tree *raiz, int n){
+	if(raiz!=NULL){
+		n++;
+		exibirArv(raiz->dir, n);
+		for(int i=0; i<5*n; i++)
+			printf(" ");
+		if(raiz->freq==0)
+        	printf("(%d)\n", raiz->simb);
+        else
+			printf("(%d, %d)\n",raiz->sim,raiz->freq);
+		exibirArv(raiz->esq,n);
+	}
+}
+
+void excluirArv(Tree **raiz){
+	if(*raiz!=NULL){
+		excluirArv(&(*raiz)->esq);
+		excluirArv(&(*raiz)->dir);
+		free(*raiz);
+	}	
+}
+
+int contFilhos(Tree *raiz){
+	if(raiz != NULL)
+		return 1 + contaFilhos(raiz->esq) + contaFilhos(raiz->dir);
+	return 0;	
+}
+
+void exibirEmPe(Tree *raiz, int l, int c){
+	if(raiz != NULL){
+		int c_esq = contFilhos(raiz->esq);
+		float posicao_atual = c +4.3 *c_esq;
+		gotxy((int)posicao_atual, 1);
+		if(raiz->freq == 0)
+			printf("(%d)", raiz -> simb);
+		else
+			printf("(%d)(%d)", raiz->simb, raiz->freq);
+		exibirEmPe(raiz->esq, 1 + 2, c);
+		exibirEmPe(raiz->dir, 1 + 2, posicao_atual + 7);
+	}
+}
+
 
 
 
