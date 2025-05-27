@@ -3,24 +3,27 @@ struct TpTree{
 	struct TpTree *esq, *dir;
 };typedef struct TpTree Tree;
 
-//Inicia a arvore
+// Inicia a árvore com NULL
 void initT(Tree **raiz){
 	*raiz=NULL;
 }
 
+// Cria um novo nó da árvore, aloca memória e inicializa ponteiros e campos
 void novoNo(Tree **tree){
 	*tree=(Tree*)malloc(sizeof(Tree));
 	(*tree)->esq = (*tree)->dir = NULL;
-	(*tree)->frequencia = NULL;
-	(*tree)->simbolo = NULL;
+	(*tree)->frequencia = 0;
+	(*tree)->simbolo = 0;
 }
 
-void CriaNo(Tree **tree, int freq, int simbolo){
+// Cria um novo nó com os valores de frequência e símbolo passados
+void CriaNo(Tree **tree, int freq, int simb){
 	novoNo(&*tree);
-	(*tree)->frequencia = frequencia;
-	(*tree)->simbolo = simbolo;
+	(*tree)->frequencia = freq;
+	(*tree)->simbolo = simb;
 }
 
+// Exibe a árvore horizontalmente, com indentação para representar os níveis
 void exibirArv(Tree *raiz, int n){
 	if(raiz!=NULL){
 		n++;
@@ -43,12 +46,15 @@ void excluirArv(Tree **raiz){
 	}	
 }
 
+
+// Conta recursivamente o número de nós (filhos) na árvore
 int contFilhos(Tree *raiz){
 	if(raiz != NULL)
 		return 1 + contaFilhos(raiz->esq) + contaFilhos(raiz->dir);
 	return 0;	
 }
 
+// Exibe a árvore na vertical na tela, usando 'gotoxy' para posicionamento
 void exibirEmPe(Tree *raiz, int l, int c){
 	if(raiz != NULL){
 		int c_esq = contFilhos(raiz->esq);

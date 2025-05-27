@@ -44,7 +44,38 @@ char Menu()
 	return op;
 }
 
-void
+Floresta * criaFloresta(Tabela *t)
+ {
+	Floresta *f;
+	initFloresta(&f);
+	while(t!=NULL)
+	{
+		inserirFloresta(NULL,&f,t->reg.simb,t->freq,NULL);
+		t=t->prox;
+	}
+	return f;
+ }
+
+Tree * criaArvoreHuffman(Floresta **f)
+{
+	Tree* dir, *esq;
+	while(*f !=NULL)
+	{
+		esq=retiraFloresta(&*f);
+		if(*f !=NULL)
+		{
+			dir=retiraFloresta(&*f);
+		}
+		inserirFloresta(esq,&*f,-1,(esq->freq + dir->freq),dir);
+	}
+	return esq;
+}
+
+// CRIAR A FUNCAO PARA FAZER  A BOMBA DO ARQ BINARIO
+
+
+
+
 
 void gravarFrase(Tabela **tab, int *TL){
     char letra, palavra[30], aux[2];
@@ -52,16 +83,15 @@ void gravarFrase(Tabela **tab, int *TL){
     FILE *ptr = fopen("entrada.txt", "r");
     letra = tolower(fgetc(ptr));
     while(!feof(ptr)){
-        //if(TRATAR TODOS OS ACEMTOS POSSIVEIS, FAZER A BUSCA E VERIFICAR, SE TIVER ADD FREQUENCIA, SE NÃO CRIA)(Á À Â Ã, É Ê, Í, Ó Õ, Ú)
         if(letra == 32 || letra == 44 || letra == 46 || letra == '/0'){//espaco, virgula, ponto, final de linha
             if(i!=0){
                 aux[0] = letra;
                 aux[1] = '/0';
-                inserir(&*tab, tl, aux, cod, freq);
+                inserirTabela(&*tab, tl, aux, cod);
 
             }
             palavra[i] = '/0';
-            inserir(&*tab, tl, palavra, cod, freq);
+            inserirTabela(&*tab, tl, palavra, cod);
             i = 0;
         }  
         palavra[i] = letra;
@@ -71,24 +101,15 @@ void gravarFrase(Tabela **tab, int *TL){
     fclose(ptr);
 }
 
-
-
 void executar(){
     char op;
     Floresta *flo;
     Tabela *tab;
-    init(tab);
+    initTabela(tab);
     init(flo);
     do{
 		op=Menu();
 		switch(op){
-			case 'A':
-				system("cls");
-                //exibir frase
-                gotoxy(1,1);
-				fflush(stdin);
-				getch();
-				break;
 			case 'B':
 				system("cls");
 				//exibir lista

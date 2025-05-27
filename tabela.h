@@ -33,7 +33,7 @@ struct tabela{
 typedef struct tabela Tabela;
 
 
-void init(Tabela **T)
+void initTabela(Tabela **T)
 {
 	*T=NULL;
 }
@@ -43,7 +43,7 @@ char isEmpty(Tabela *T)
 	return T == NULL;
 }
 
-
+// Busca uma palavra na tabela e retorna o ponteiro para o nó, se encontrado.
 Tabela * buscaPalavra(Tabela *t,char palavra[30])
 {
 	while(t!= NULL && strcmp(t->reg.palavra,palavra)!=0)
@@ -53,19 +53,19 @@ Tabela * buscaPalavra(Tabela *t,char palavra[30])
 
 
 
-
-Tabela* criar(int simb,char palavra[30],unsigned char cod)
+// Insere uma nova palavra na tabela, atualizando a frequência ou criando novo nó ordenadamente.
+Tabela* criarLinhaTabela(int simb,char palavra[30],unsigned char cod)
 {
 	Tabela *t=(Tabela*) malloc(sizeof(Tabela));
 	t->reg->cod.num= cod;
-	strcmp(t->reg->palavra,palavra);
-	t->reg=simb=simb;
+	strcmp(t->reg.palavra,palavra);
+	t->reg.simb=simb;
 	t->prox=NULL;
 }
 
 
-//FAZER A BUSCA DENTRO DO INSERIR SAVOLDI CARALHO
-void inserirTabela(Tabela** t,int *simb,char palavra[30],unsigned char cod)
+// Insere uma nova palavra na tabela, atualizando a frequência ou criando novo nó ordenadamente.
+void inserirTabela(Tabela** t,int *simb, char palavra[30], unsigned char cod)
 {
 	Tabela* aux=buscaPalavra(*t,palavra);
 	if(aux==NULL)
@@ -101,9 +101,172 @@ void inserirTabela(Tabela** t,int *simb,char palavra[30],unsigned char cod)
 	}
 }
 
+// Lê bytes de um arquivo e exibe os bits individuais na tela.
+void montarbytes(){
+	FILE * ptr = fopen("codigo.dat", "rb");
+	Byte b;
+	fread(&b.cod, sizeof(char), 1, ptr);
+	while(!feof(ptr)){
+		printf("%d", b.bit.b0);
+		printf("%d", b.bit.b1);
+		printf("%d", b.bit.b2);
+		printf("%d", b.bit.b3);
+		printf("%d", b.bit.b4);
+		printf("%d", b.bit.b5);
+		printf("%d", b.bit.b6);
+		printf("%d", b.bit.b7);
+		fread(&b.cod, sizeof(char), 1, ptr);
+	}
+	fclose(ptr);
+}
+
+// Exibe a tabela de símbolos formatada em colunas com bordas na tela, usando caracteres gráficos.
+void exibirTab(Tabela *tab, int ci, int li){
+	int i, j, vetor[4], aux;
+	vetor[0] = ci + 20;
+	for(i=1;i<4;i++)
+		vetor[i] = vetor[i-1] + 20;
+	if(tab->freq == 0)
+		vetor[3] = vetor[2];
+
+	gotoxy(ci, li);
+	printf("%c", 201); //canto esquerdo superior
+
+	for(i = ci + 1; i < vetor[3]; i++){
+		gotoxy(i, li);
+		if(i == vetor[0] || i == vetor[1] || i == vetor[2] || i == vetor[3])
+			printf("%c", 203);
+		else
+			printf("%c", 205);
+
+	}
+
+	gotoxy(vetor[3], li);
+	printf("%c", 187); //canto direito superior
+
+	i = li+1;
+
+	gotoxy(cl, i);
+	printf("%c", 186); //borda esq
+	gotoxy(vetor[0], i);
+	printf("%c", 186);
+	gotoxy(vetor[1], i);
+	printf("%c", 186);
+	gotoxy(vetor[2], i);
+	printf("%c", 186);
+	gotoxy(vetor[3], i);
+	printf("%c", 186); //borda dir
+
+	aux = strlen("Palavra")/2;
+	gotoxy((ci[0] + vetor[0])/2 -aux, i);
+	printf("PALAVRA");
+
+	aux = strlen("Simbolo")/2;
+	gotoxy((vetor[0] + vetor[1])/2 -aux, i);
+	printf("SIMBOLO");
+
+	aux = strlen("Codigo")/2;
+	gotoxy((vetor[1] + vetor[2])/2 -aux, i);
+	printf("CODIGO");
+
+	if(vetor[2] != vetor[3]){
+		aux = strlen("Simbolo")/2;
+		gotoxy((vetor[0] + vetor[1])/2 -aux, i);
+		printf("SIMBOLO");
+	}
+
+	i++
+
+	gotoxy(ci, i);
+	printf("%c", 204); //div esq
+
+	for(j = ci + 1; j < vetor[3]; j++){
+		gotoxy(j,i);
+		if(j == vetor[0] || j == vetor[1] || j == vetor[2] || j == vetor[3])
+			printf("%c", 206); //div col
+		else
+			printf("%c", 206); // linha hor
+
+
+	}
+
+	gotoxy(vet[3], i);
+	printf("%c", 185);
+
+	while(tab != NULL){
+		i++;
+		gotoxy(ci, i);
+		printf("%c", 186); //borda esq
+		gotoxy(vetor[0], i);
+		printf("%c", 186); //divisoria
+		gotoxy(vetor[1], i);
+		printf("%c", 186);
+		gotoxy(vetor[2], i);
+		printf("%c", 186);
+		gotoxy(vetor[3], i); //borda dir
+		printf("%c", 186);
+
+		if(tab->reg.palavra[0] == ''){
+			aux = strlen("'Espaco'")/2;
+			gotoxy((i+vetor[0])/2 -aux, i);
+			printf("'Espaco'");
+
+		}
+		else{
+			aux = strlen(tab->reg.palavra)/2;
+			gotoxy((ci+vetor[0])/2 -aux, i);
+			printf("%s", tab->reg.palavra);
+		}
+
+		gotoxy((vetor[0] + vetor[1])/2 -1, i);
+		printf("%d", tab->reg.simb);
+		aux = strlen(tab->reg.cod);
+		gotoxy((vetor[1] + vetor[2])/2 -aux, i);
+		printf("%s", tab->reg.cod);
+
+		if(vetor[2] != vetor[3]){
+			gotoxy((vetor[2] + vetor[3])/2 -1, i);
+			printf("%d", tab->freq);
+		}
+
+		i++;
+		gotoxy(ci, i);
+		printf("%c", 204);
+
+		for (j = ci + 1; j < vetor[3]; j++) {
+            gotoxy(j, i);
+            if (j == vetor[0] || j == vetor[1] || j == vetor[2] || j == vetor[3])
+                printf("%c", 206); // Divisões de colunas
+            else
+                printf("%c", 205); // Li horizontal
+        }
+
+        gotoxy(vetor[3], i);
+        printf("%c", 185); // Div dir
+
+        // Próximo elemento da pilha
+        t = t->prox; 
+	}
+
+	// Base da caixa
+    gotoxy(ci, i);
+    printf("%c", 200); // Canto inferior esquerdo
+
+    for (j = ci + 1; j < vetor[3]; j++) {
+        gotoxy(j, i);
+        if (j == vetor[0] || j == vetor[1] || j == vetor[2] || j == vetor[3])
+            printf("%c", 202); // Div de colunas
+        else
+            printf("%c", 205); // Li horizontal
+    }
+
+    gotoxy(vetor[3], i);
+    printf("%c", 188); // Canto inferior direito
+}
+
 
 //
-// MUITO TRABALHO ARRUMAR ESSA POHA DAI EU FIZ NO MEU DIRETO ALI 
+// MUITO TRABALHO ARRUMAR DAI EU FIZ NO MEU DIRETO ALI 
  
 /*
 void inserirTabelaOrdenado(Tabela **tab, Registro reg){
@@ -131,6 +294,7 @@ void inserirTabelaOrdenado(Tabela **tab, Registro reg){
 }
 */
 
+// Busca uma entrada na tabela pelo símbolo.
 char BuscarSimbolo(Tabela *tab,int simb,Tabela **aux){
 	*aux=tab;
 	while(*aux!=NULL && (*aux)->reg.simbolo!=simb)

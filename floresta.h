@@ -13,7 +13,7 @@ struct floresta
 };
 typedef struct floresta Floresta;
 
-void init(Floresta **lista)
+void initFloresta(Floresta **lista)
 {
 	*lista = NULL;
 }
@@ -29,7 +29,7 @@ Tree* novaArvore(Tree *esq, int simb, int freq, Tree *dir)
 	no->esq = esq;
 	no->dir = dir;
 	no->freq = freq;
-	no->simbolo = simb;
+	no->simb = simb;
 	
 	return  no;
 }
@@ -42,6 +42,7 @@ Floresta * novaFloresta(Tree* esq, int simb,int freq,Tree *dir)
 	return f;
 }
 
+// Insere uma nova árvore na floresta de forma ordenada por frequência.
 void inserirFloresta(Tree *esq,Floresta **lista,int simb, int freq, Tree* dir)
 {
 	Floresta *aux;
@@ -63,7 +64,7 @@ void inserirFloresta(Tree *esq,Floresta **lista,int simb, int freq, Tree* dir)
 	}
 }
 
-Tree* retira(Floresta **lista)
+Tree* retiraFloresta(Floresta **lista)
 {
 	Tree *aux = (*lista)->info;
 	Floresta *rm = *lista;

@@ -44,18 +44,20 @@ char Menu(){
 	return op;
 }
 
+// Lê os registros do arquivo e monta a tabela de palavras
 void montarTab(Tabela *tab){
     FILE *ptr = fopen("registro.dat","rb");
     Registro reg;
     fread(&reg, sizeof(Registro), 1, ptr);
     while(!feof){
-        inserirTabelaOrdenado(&*tab, reg);
+        inserirTabela(&*tab, reg.simb, reg.palavra, reg.cod);
         fread(&reg, sizeof(Registro), 1, ptr);
     }
     fclose(ptr);
 
 }
 
+// Constrói a árvore de Huffman a partir da tabela de códigos
 void MontarArv(Tree **raiz, Tabela *tab){
     int i;
     Tree aux;
@@ -74,12 +76,13 @@ void MontarArv(Tree **raiz, Tabela *tab){
         
             }
         }
-        aux -> simbolo = tab->reg.simb;
-        aux = aux-> prox;
+        aux->simbolo = tab->reg.simb;
+        tab = tab-> prox;
 
     }
 }
 
+// Converte um byte (8 bits) em uma string binária de 8 caracteres
 void pegarCodigo(char cod[],Byte b){
 	cod[0]=b.bit.b7+48;
 	cod[1]=b.bit.b6+48;
@@ -91,12 +94,14 @@ void pegarCodigo(char cod[],Byte b){
 	cod[7]=b.bit.b0+48;
 }
 
-void trim(char frase[]){
+// Remove espaços em branco do final da string/frase
+void remove(char frase[]){
 	int i;
 	for(i=strlen(frase)-1;frase[i]==' ';i--);
 	frase[i+1]='\0';
 }
 
+// Lê o arquivo binário de código e decodifica a mensagem usando a árvore de Huffman
 void decodificarHuffman(Tree *raiz, Tabela *tab, char  frase[TF]){
 	Tree *aux;
 	Tabela *tabAux;
@@ -123,7 +128,7 @@ void decodificarHuffman(Tree *raiz, Tabela *tab, char  frase[TF]){
 		}
 		fread(&Byte,sizeof(char),1,ptr);
 	}
-	trim(frase);
+	remove(frase);
 	printf("\n\n%s",frase);
     fclose(ptr);
 }
