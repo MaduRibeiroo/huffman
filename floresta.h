@@ -69,7 +69,7 @@ Tree* retira(Floresta **lista)
 	Tree *aux = (*lista)->info;
 	Floresta *rm = *lista;
 	*lista= (*lista)->prox;
-	free(*lista);
+	free(*rm);
 	return aux;
 }
 
