@@ -57,22 +57,23 @@ Tabela * buscaPalavra(Tabela *t,char palavra[30])
 Tabela* criarLinhaTabela(int simb,char palavra[30],unsigned char cod)
 {
 	Tabela *t=(Tabela*) malloc(sizeof(Tabela));
-	t->reg->cod.num= cod;
+	t->reg.cod.num = cod;
 	strcmp(t->reg.palavra,palavra);
 	t->reg.simb=simb;
 	t->prox=NULL;
+	return t;
 }
 
 
 // Insere uma nova palavra na tabela, atualizando a frequÃªncia ou criando novo nÃ³ ordenadamente.
-void inserirTabela(Tabela** t,int *simb, char palavra[30], unsigned char cod)
+void inserirTabela(Tabela** t,int &simb, char palavra[30], unsigned char cod)
 {
 	Tabela* aux=buscaPalavra(*t,palavra);
 	if(aux==NULL)
 	{
 		aux=criarLinhaTabela(simb++,palavra,cod);
-		*aux->freq=1;
-		*aux->prox=null;
+		aux->freq=1;
+		aux->prox=NULL;
 	}
 	else
 	{
@@ -104,165 +105,148 @@ void inserirTabela(Tabela** t,int *simb, char palavra[30], unsigned char cod)
 // LÃª bytes de um arquivo e exibe os bits individuais na tela.
 void montarbytes(){
 	FILE * ptr = fopen("codigo.dat", "rb");
-	Byte b;
-	fread(&b.cod, sizeof(char), 1, ptr);
+	byte b;
+	fread(&b.num, sizeof(char), 1, ptr);
 	while(!feof(ptr)){
-		printf("%d", b.bit.b0);
-		printf("%d", b.bit.b1);
-		printf("%d", b.bit.b2);
-		printf("%d", b.bit.b3);
-		printf("%d", b.bit.b4);
-		printf("%d", b.bit.b5);
-		printf("%d", b.bit.b6);
-		printf("%d", b.bit.b7);
-		fread(&b.cod, sizeof(char), 1, ptr);
+		printf("%d", b.bi.b0);
+		printf("%d", b.bi.b1);
+		printf("%d", b.bi.b2);
+		printf("%d", b.bi.b3);
+		printf("%d", b.bi.b4);
+		printf("%d", b.bi.b5);
+		printf("%d", b.bi.b6);
+		printf("%d", b.bi.b7);
+		fread(&b.num, sizeof(char), 1, ptr);
 	}
 	fclose(ptr);
 }
 
-// Exibe a tabela de sÃ­mbolos formatada em colunas com bordas na tela, usando caracteres grÃ¡ficos.
+// Exibe a tabela de símbolos formatada em colunas com bordas na tela, usando caracteres gráficos.
 void exibirTab(Tabela *tab, int ci, int li){
 	int i, j, vetor[4], aux;
 	vetor[0] = ci + 20;
-	for(i=1;i<4;i++)
-		vetor[i] = vetor[i-1] + 20;
+	for(i = 1; i < 4; i++)
+		vetor[i] = vetor[i - 1] + 20;
 	if(tab->freq == 0)
 		vetor[3] = vetor[2];
 
 	gotoxy(ci, li);
-	printf("%c", 201); //canto esquerdo superior
+	printf("%c", 201); // canto superior esquerdo
 
 	for(i = ci + 1; i < vetor[3]; i++){
 		gotoxy(i, li);
-		if(i == vetor[0] || i == vetor[1] || i == vetor[2] || i == vetor[3])
-			printf("%c", 203);
+		if(i == vetor[0] || i == vetor[1] || i == vetor[2])
+			printf("%c", 203); // junção de colunas
 		else
-			printf("%c", 205);
-
+			printf("%c", 205); // linha horizontal
 	}
-
 	gotoxy(vetor[3], li);
-	printf("%c", 187); //canto direito superior
+	printf("%c", 187); // canto superior direito
 
-	i = li+1;
+	i = li + 1;
 
-	gotoxy(cl, i);
-	printf("%c", 186); //borda esq
-	gotoxy(vetor[0], i);
-	printf("%c", 186);
-	gotoxy(vetor[1], i);
-	printf("%c", 186);
-	gotoxy(vetor[2], i);
-	printf("%c", 186);
-	gotoxy(vetor[3], i);
-	printf("%c", 186); //borda dir
+	// cabeçalho
+	gotoxy(ci, i);         printf("%c", 186); // borda esquerda
+	gotoxy(vetor[0], i);   printf("%c", 186);
+	gotoxy(vetor[1], i);   printf("%c", 186);
+	gotoxy(vetor[2], i);   printf("%c", 186);
+	gotoxy(vetor[3], i);   printf("%c", 186); // borda direita
 
-	aux = strlen("Palavra")/2;
-	gotoxy((ci[0] + vetor[0])/2 -aux, i);
+	aux = strlen("Palavra") / 2;
+	gotoxy((ci + vetor[0]) / 2 - aux, i);
 	printf("PALAVRA");
 
-	aux = strlen("Simbolo")/2;
-	gotoxy((vetor[0] + vetor[1])/2 -aux, i);
+	aux = strlen("Simbolo") / 2;
+	gotoxy((vetor[0] + vetor[1]) / 2 - aux, i);
 	printf("SIMBOLO");
 
-	aux = strlen("Codigo")/2;
-	gotoxy((vetor[1] + vetor[2])/2 -aux, i);
+	aux = strlen("Codigo") / 2;
+	gotoxy((vetor[1] + vetor[2]) / 2 - aux, i);
 	printf("CODIGO");
 
 	if(vetor[2] != vetor[3]){
-		aux = strlen("Simbolo")/2;
-		gotoxy((vetor[0] + vetor[1])/2 -aux, i);
-		printf("SIMBOLO");
+		aux = strlen("Frequencia") / 2;
+		gotoxy((vetor[2] + vetor[3]) / 2 - aux, i);
+		printf("FREQUENCIA");
 	}
 
-	i++
+	i++;
 
+	// linha divisória
 	gotoxy(ci, i);
-	printf("%c", 204); //div esq
-
+	printf("%c", 204); // junção esquerda
 	for(j = ci + 1; j < vetor[3]; j++){
-		gotoxy(j,i);
-		if(j == vetor[0] || j == vetor[1] || j == vetor[2] || j == vetor[3])
-			printf("%c", 206); //div col
+		gotoxy(j, i);
+		if(j == vetor[0] || j == vetor[1] || j == vetor[2])
+			printf("%c", 206); // junção de colunas
 		else
-			printf("%c", 206); // linha hor
-
-
+			printf("%c", 205); // linha horizontal
 	}
+	gotoxy(vetor[3], i);
+	printf("%c", 185); // junção direita
 
-	gotoxy(vet[3], i);
-	printf("%c", 185);
-
+	// linhas de dados
 	while(tab != NULL){
 		i++;
-		gotoxy(ci, i);
-		printf("%c", 186); //borda esq
-		gotoxy(vetor[0], i);
-		printf("%c", 186); //divisoria
-		gotoxy(vetor[1], i);
-		printf("%c", 186);
-		gotoxy(vetor[2], i);
-		printf("%c", 186);
-		gotoxy(vetor[3], i); //borda dir
-		printf("%c", 186);
+		gotoxy(ci, i);         printf("%c", 186); // borda esquerda
+		gotoxy(vetor[0], i);   printf("%c", 186);
+		gotoxy(vetor[1], i);   printf("%c", 186);
+		gotoxy(vetor[2], i);   printf("%c", 186);
+		gotoxy(vetor[3], i);   printf("%c", 186); // borda direita
 
-		if(tab->reg.palavra[0] == ''){
-			aux = strlen("'Espaco'")/2;
-			gotoxy((i+vetor[0])/2 -aux, i);
+		if(tab->reg.palavra[0] == ' '){
+			aux = strlen("'Espaco'") / 2;
+			gotoxy((ci + vetor[0]) / 2 - aux, i);
 			printf("'Espaco'");
-
 		}
 		else{
-			aux = strlen(tab->reg.palavra)/2;
-			gotoxy((ci+vetor[0])/2 -aux, i);
+			aux = strlen(tab->reg.palavra) / 2;
+			gotoxy((ci + vetor[0]) / 2 - aux, i);
 			printf("%s", tab->reg.palavra);
 		}
 
-		gotoxy((vetor[0] + vetor[1])/2 -1, i);
+		gotoxy((vetor[0] + vetor[1]) / 2 - 1, i);
 		printf("%d", tab->reg.simb);
-		aux = strlen(tab->reg.cod);
-		gotoxy((vetor[1] + vetor[2])/2 -aux, i);
-		printf("%s", tab->reg.cod);
+
+		gotoxy((vetor[1] + vetor[2]) / 2 - 1, i);
+		printf("%d", tab->reg.cod.num); // usa o campo correto do union
 
 		if(vetor[2] != vetor[3]){
-			gotoxy((vetor[2] + vetor[3])/2 -1, i);
+			gotoxy((vetor[2] + vetor[3]) / 2 - 1, i);
 			printf("%d", tab->freq);
 		}
 
 		i++;
 		gotoxy(ci, i);
-		printf("%c", 204);
+		printf("%c", 204); // borda esquerda da linha
 
-		for (j = ci + 1; j < vetor[3]; j++) {
-            gotoxy(j, i);
-            if (j == vetor[0] || j == vetor[1] || j == vetor[2] || j == vetor[3])
-                printf("%c", 206); // DivisÃµes de colunas
-            else
-                printf("%c", 205); // Li horizontal
-        }
+		for(j = ci + 1; j < vetor[3]; j++){
+			gotoxy(j, i);
+			if(j == vetor[0] || j == vetor[1] || j == vetor[2])
+				printf("%c", 206); // cruzamento
+			else
+				printf("%c", 205); // linha horizontal
+		}
+		gotoxy(vetor[3], i);
+		printf("%c", 185); // borda direita
 
-        gotoxy(vetor[3], i);
-        printf("%c", 185); // Div dir
-
-        // PrÃ³ximo elemento da pilha
-        t = t->prox; 
+		tab = tab->prox;
 	}
 
-	// Base da caixa
-    gotoxy(ci, i);
-    printf("%c", 200); // Canto inferior esquerdo
-
-    for (j = ci + 1; j < vetor[3]; j++) {
-        gotoxy(j, i);
-        if (j == vetor[0] || j == vetor[1] || j == vetor[2] || j == vetor[3])
-            printf("%c", 202); // Div de colunas
-        else
-            printf("%c", 205); // Li horizontal
-    }
-
-    gotoxy(vetor[3], i);
-    printf("%c", 188); // Canto inferior direito
+	// base final da tabela
+	gotoxy(ci, i);
+	printf("%c", 200); // canto inferior esquerdo
+	for(j = ci + 1; j < vetor[3]; j++){
+		gotoxy(j, i);
+		if(j == vetor[0] || j == vetor[1] || j == vetor[2])
+			printf("%c", 202); // divisões de colunas
+		else
+			printf("%c", 205); // linha horizontal
+	}
+	gotoxy(vetor[3], i);
+	printf("%c", 188); // canto inferior direito
 }
+
 
 
 //
@@ -297,7 +281,7 @@ void inserirTabelaOrdenado(Tabela **tab, Registro reg){
 // Busca uma entrada na tabela pelo sÃ­mbolo.
 char BuscarSimbolo(Tabela *tab,int simb,Tabela **aux){
 	*aux=tab;
-	while(*aux!=NULL && (*aux)->reg.simbolo!=simb)
+	while(*aux!=NULL && (*aux)->reg.simb!=simb)
 		*aux = (*aux)->prox;
 	if(*aux!=NULL)
 		return 1;

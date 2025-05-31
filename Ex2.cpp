@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <conio2.h>
+#include <ctype.h>
 
+#include "layout.h"
 #include "arvore.h"
 #include "tabela.h"
-#include "layout.h"
 
 #define TF 200
 
@@ -39,18 +41,18 @@ char Menu(){
 		gotoxy(c,l);
 		printf("OPCAO: ");
 		fflush(stdin);
-		op=toupper(getche());
+		op = toupper(getche());
 	}while(op!='A' && op!='B' && op!='C' && op!='D'  && op!='E' && op!=27 );
 	return op;
 }
 
 // L√™ os registros do arquivo e monta a tabela de palavras
-void montarTab(Tabela *tab){
+void montarTab(Tabela **tab){
     FILE *ptr = fopen("registro.dat","rb");
     Registro reg;
     fread(&reg, sizeof(Registro), 1, ptr);
-    while(!feof){
-        inserirTabela(&*tab, reg.simb, reg.palavra, reg.cod);
+    while(!feof(ptr)){
+        inserirTabela(&*tab, reg.simb, reg.palavra, reg.cod.num);
         fread(&reg, sizeof(Registro), 1, ptr);
     }
     fclose(ptr);
@@ -58,40 +60,98 @@ void montarTab(Tabela *tab){
 }
 
 // Constr√≥i a √°rvore de Huffman a partir da tabela de c√≥digos
-void MontarArv(Tree **raiz, Tabela *tab){
-    int i;
-    Tree aux;
+void MontarArv(Tree **raiz, Tabela *tab) {
+    Tree *aux;
     novoNo(&*raiz);
-    while(tab!=NULL){
-        aux=*raiz;
-        for(i=0;i<strlen(tab->reg.cod); i++){
-            if(tab->reg.cod[i]=='0')
-                if(aux->esq==NULL)
-                    novoNo(&(aux->esq));
-                aux = aux->esq;
-            else{
-                if(aux->dir==NULL)
-                    novoNo(&(aux->dir));
-                aux = aux->dir;
-        
-            }
-        }
-        aux->simbolo = tab->reg.simb;
-        tab = tab-> prox;
+    
+    while (tab != NULL) {
+        aux = *raiz;
 
+        // Percorre os 8 bits do byte codificado
+        if (tab->freq > 0) {  // ou outro critÈrio para considerar v·lido
+            if (tab->reg.cod.bi.b7 == 0) {
+                if (aux->esq == NULL) novoNo(&(aux->esq));
+                aux = aux->esq;
+            } else {
+                if (aux->dir == NULL) novoNo(&(aux->dir));
+                aux = aux->dir;
+            }
+
+            if (tab->reg.cod.bi.b6 == 0) {
+                if (aux->esq == NULL) novoNo(&(aux->esq));
+                aux = aux->esq;
+            } else {
+                if (aux->dir == NULL) novoNo(&(aux->dir));
+                aux = aux->dir;
+            }
+
+            if (tab->reg.cod.bi.b5 == 0) {
+                if (aux->esq == NULL) novoNo(&(aux->esq));
+                aux = aux->esq;
+            } else {
+                if (aux->dir == NULL) novoNo(&(aux->dir));
+                aux = aux->dir;
+            }
+
+            if (tab->reg.cod.bi.b4 == 0) {
+                if (aux->esq == NULL) novoNo(&(aux->esq));
+                aux = aux->esq;
+            } else {
+                if (aux->dir == NULL) novoNo(&(aux->dir));
+                aux = aux->dir;
+            }
+
+            if (tab->reg.cod.bi.b3 == 0) {
+                if (aux->esq == NULL) novoNo(&(aux->esq));
+                aux = aux->esq;
+            } else {
+                if (aux->dir == NULL) novoNo(&(aux->dir));
+                aux = aux->dir;
+            }
+
+            if (tab->reg.cod.bi.b2 == 0) {
+                if (aux->esq == NULL) novoNo(&(aux->esq));
+                aux = aux->esq;
+            } else {
+                if (aux->dir == NULL) novoNo(&(aux->dir));
+                aux = aux->dir;
+            }
+
+            if (tab->reg.cod.bi.b1 == 0) {
+                if (aux->esq == NULL) novoNo(&(aux->esq));
+                aux = aux->esq;
+            } else {
+                if (aux->dir == NULL) novoNo(&(aux->dir));
+                aux = aux->dir;
+            }
+
+            if (tab->reg.cod.bi.b0 == 0) {
+                if (aux->esq == NULL) novoNo(&(aux->esq));
+                aux = aux->esq;
+            } else {
+                if (aux->dir == NULL) novoNo(&(aux->dir));
+                aux = aux->dir;
+            }
+
+            // Atribui o sÌmbolo no nÛ folha
+            aux->simbolo = tab->reg.simb;
+        }
+
+        tab = tab->prox;
     }
 }
 
-// Converte um byte (8 bits) em uma string bin√°ria de 8 caracteres
-void pegarCodigo(char cod[],Byte b){
-	cod[0]=b.bit.b7+48;
-	cod[1]=b.bit.b6+48;
-	cod[2]=b.bit.b5+48;
-	cod[3]=b.bit.b4+48;
-	cod[4]=b.bit.b3+48;
-	cod[5]=b.bit.b2+48;
-	cod[6]=b.bit.b1+48;
-	cod[7]=b.bit.b0+48;
+
+// Converte um byte (8 bis) em uma string bin√°ria de 8 caracteres
+void pegarCodigo(char cod[],byte b){
+	cod[0]=b.bi.b7+48;
+	cod[1]=b.bi.b6+48;
+	cod[2]=b.bi.b5+48;
+	cod[3]=b.bi.b4+48;
+	cod[4]=b.bi.b3+48;
+	cod[5]=b.bi.b2+48;
+	cod[6]=b.bi.b1+48;
+	cod[7]=b.bi.b0+48;
 }
 
 // Remove espa√ßos em branco do final da string/frase
@@ -134,13 +194,13 @@ void decodificarHuffman(Tree *raiz, Tabela *tab, char  frase[TF]){
 }
 
 void executar(){
-	char op,frase[TFL];
+	char op,frase[TF];
 	Tabela *tab;
 	Tree *raiz;
-	init(&tab);
+	initTabela(&tab);
 	initT(&raiz);
 	montarTab(&tab);
-	montarArv(&raiz,tab);
+	MontarArv(&raiz,tab);
 	strcpy(frase,"");
 	decodificarHuffman(raiz,tab,frase);
 	do{
@@ -148,7 +208,7 @@ void executar(){
 		switch(op){
 			case 'A':
 				system("cls");
-				exibirTabela(tab,1,1); //falta fazer
+				exibirTab(tab,1,1); //falta fazer
 				gotoxy(1,1);
 				fflush(stdin);
 				getch();
@@ -163,16 +223,16 @@ void executar(){
 			case 'C':
 				system("cls");
 				printf("A frase decodificada foi:\n %s\n ",frase);
-				teste();
-				exibirTabela(tab,1,4); //aqui
+				montarbytes();
+				exibirTab(tab,1,4); //aqui
 				gotoxy(1,1);
 				fflush(stdin);
 				getch();
 				break;
 			case 'D':
 				system("cls");
-				teste();
-				exibirTabela(tab,1,4); //aqui
+				montarbytes();
+				exibirTab(tab,1,4); //aqui
 				gotoxy(1,1);
 				fflush(stdin);
 				getch();

@@ -50,7 +50,7 @@ void excluirArv(Tree **raiz){
 // Conta recursivamente o número de nós (filhos) na árvore
 int contFilhos(Tree *raiz){
 	if(raiz != NULL)
-		return 1 + contaFilhos(raiz->esq) + contaFilhos(raiz->dir);
+		return 1 + contFilhos(raiz->esq) + contFilhos(raiz->dir);
 	return 0;	
 }
 
