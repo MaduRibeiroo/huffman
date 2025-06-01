@@ -102,24 +102,6 @@ void inserirTabela(Tabela** t,int &simb, char palavra[30], unsigned char cod)
 	}
 }
 
-// LÃª bytes de um arquivo e exibe os bits individuais na tela.
-void montarbytes(){
-	FILE * ptr = fopen("codigo.dat", "rb");
-	byte b;
-	fread(&b.num, sizeof(char), 1, ptr);
-	while(!feof(ptr)){
-		printf("%d", b.bi.b0);
-		printf("%d", b.bi.b1);
-		printf("%d", b.bi.b2);
-		printf("%d", b.bi.b3);
-		printf("%d", b.bi.b4);
-		printf("%d", b.bi.b5);
-		printf("%d", b.bi.b6);
-		printf("%d", b.bi.b7);
-		fread(&b.num, sizeof(char), 1, ptr);
-	}
-	fclose(ptr);
-}
 
 // Exibe a tabela de símbolos formatada em colunas com bordas na tela, usando caracteres gráficos.
 void exibirTab(Tabela *tab, int ci, int li){

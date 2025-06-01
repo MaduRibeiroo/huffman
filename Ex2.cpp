@@ -6,7 +6,7 @@
 
 #include "layout.h"
 #include "arvore.h"
-#include "tabela.h"
+#include "tabela2.h"
 
 #define TF 200
 
@@ -52,7 +52,7 @@ void montarTab(Tabela **tab){
     Registro reg;
     fread(&reg, sizeof(Registro), 1, ptr);
     while(!feof(ptr)){
-        inserirTabela(&*tab, reg.simb, reg.palavra, reg.cod.num);
+        inserirTabelaOrd(&*tab, reg);
         fread(&reg, sizeof(Registro), 1, ptr);
     }
     fclose(ptr);
@@ -60,98 +60,40 @@ void montarTab(Tabela **tab){
 }
 
 // ConstrÃ³i a Ã¡rvore de Huffman a partir da tabela de cÃ³digos
-void MontarArv(Tree **raiz, Tabela *tab) {
-    Tree *aux;
-    novoNo(&*raiz);
-    
-    while (tab != NULL) {
-        aux = *raiz;
-
-        // Percorre os 8 bits do byte codificado
-        if (tab->freq > 0) {  // ou outro critério para considerar válido
-            if (tab->reg.cod.bi.b7 == 0) {
-                if (aux->esq == NULL) novoNo(&(aux->esq));
-                aux = aux->esq;
-            } else {
-                if (aux->dir == NULL) novoNo(&(aux->dir));
-                aux = aux->dir;
-            }
-
-            if (tab->reg.cod.bi.b6 == 0) {
-                if (aux->esq == NULL) novoNo(&(aux->esq));
-                aux = aux->esq;
-            } else {
-                if (aux->dir == NULL) novoNo(&(aux->dir));
-                aux = aux->dir;
-            }
-
-            if (tab->reg.cod.bi.b5 == 0) {
-                if (aux->esq == NULL) novoNo(&(aux->esq));
-                aux = aux->esq;
-            } else {
-                if (aux->dir == NULL) novoNo(&(aux->dir));
-                aux = aux->dir;
-            }
-
-            if (tab->reg.cod.bi.b4 == 0) {
-                if (aux->esq == NULL) novoNo(&(aux->esq));
-                aux = aux->esq;
-            } else {
-                if (aux->dir == NULL) novoNo(&(aux->dir));
-                aux = aux->dir;
-            }
-
-            if (tab->reg.cod.bi.b3 == 0) {
-                if (aux->esq == NULL) novoNo(&(aux->esq));
-                aux = aux->esq;
-            } else {
-                if (aux->dir == NULL) novoNo(&(aux->dir));
-                aux = aux->dir;
-            }
-
-            if (tab->reg.cod.bi.b2 == 0) {
-                if (aux->esq == NULL) novoNo(&(aux->esq));
-                aux = aux->esq;
-            } else {
-                if (aux->dir == NULL) novoNo(&(aux->dir));
-                aux = aux->dir;
-            }
-
-            if (tab->reg.cod.bi.b1 == 0) {
-                if (aux->esq == NULL) novoNo(&(aux->esq));
-                aux = aux->esq;
-            } else {
-                if (aux->dir == NULL) novoNo(&(aux->dir));
-                aux = aux->dir;
-            }
-
-            if (tab->reg.cod.bi.b0 == 0) {
-                if (aux->esq == NULL) novoNo(&(aux->esq));
-                aux = aux->esq;
-            } else {
-                if (aux->dir == NULL) novoNo(&(aux->dir));
-                aux = aux->dir;
-            }
-
-            // Atribui o símbolo no nó folha
-            aux->simbolo = tab->reg.simb;
-        }
-
-        tab = tab->prox;
-    }
+void montarArv(Tree **raiz,Tabela *tab){
+	int i;
+	Tree *aux;
+	novoNo(&*raiz);
+	while(tab != NULL){
+		aux = *raiz;
+		for(i=0;i<strlen(tab->reg.cod);i++){
+			if(tab->reg.cod[i]=='0'){
+				if(aux->esq==NULL)
+					novoNo(&(aux->esq));
+				aux = aux->esq;
+			}
+			else{
+				if(aux->dir==NULL)
+					novoNo(&(aux->dir));
+				aux = aux->dir;
+			}
+		}
+		aux->simbolo = tab->reg.simb;
+		tab = tab->prox;
+	}
 }
 
 
 // Converte um byte (8 bis) em uma string binÃ¡ria de 8 caracteres
 void pegarCodigo(char cod[],byte b){
-	cod[0]=b.bi.b7+48;
-	cod[1]=b.bi.b6+48;
-	cod[2]=b.bi.b5+48;
-	cod[3]=b.bi.b4+48;
-	cod[4]=b.bi.b3+48;
-	cod[5]=b.bi.b2+48;
-	cod[6]=b.bi.b1+48;
-	cod[7]=b.bi.b0+48;
+	cod[0]=b.bit.b7+48;
+	cod[1]=b.bit.b6+48;
+	cod[2]=b.bit.b5+48;
+	cod[3]=b.bit.b4+48;
+	cod[4]=b.bit.b3+48;
+	cod[5]=b.bit.b2+48;
+	cod[6]=b.bit.b1+48;
+	cod[7]=b.bit.b0+48;
 }
 
 // Remove espaÃ§os em branco do final da string/frase
@@ -181,7 +123,7 @@ void decodificarHuffman(Tree *raiz, Tabela *tab, char  frase[TF]){
 			else
 				aux = aux->dir;
 			if(aux->esq == NULL && aux->dir ==NULL){
-				BuscarSimbolo(tab, aux->simbolo , &tabAux);
+				buscarSimbolo(tab, aux->simbolo , &tabAux);
 				strcat(frase, tabAux->reg.palavra);
 				aux = raiz;
 			}
@@ -197,10 +139,10 @@ void executar(){
 	char op,frase[TF];
 	Tabela *tab;
 	Tree *raiz;
-	initTabela(&tab);
+	init(&tab);
 	initT(&raiz);
 	montarTab(&tab);
-	MontarArv(&raiz,tab);
+	montarArv(&raiz,tab);
 	strcpy(frase,"");
 	decodificarHuffman(raiz,tab,frase);
 	do{
@@ -223,7 +165,7 @@ void executar(){
 			case 'C':
 				system("cls");
 				printf("A frase decodificada foi:\n %s\n ",frase);
-				montarbytes();
+				montarBytes();
 				exibirTab(tab,1,4); //aqui
 				gotoxy(1,1);
 				fflush(stdin);
@@ -231,7 +173,7 @@ void executar(){
 				break;
 			case 'D':
 				system("cls");
-				montarbytes();
+				montarBytes();
 				exibirTab(tab,1,4); //aqui
 				gotoxy(1,1);
 				fflush(stdin);
