@@ -103,7 +103,7 @@ void inserirTabela(Tabela** t,int &simb, char palavra[30], unsigned char cod)
 }
 
 
-// Exibe a tabela de símbolos formatada em colunas com bordas na tela, usando caracteres gráficos.
+// Exibe a tabela de sï¿½mbolos formatada em colunas com bordas na tela, usando caracteres grï¿½ficos.
 void exibirTab(Tabela *tab, int ci, int li){
 	int i, j, vetor[4], aux;
 	vetor[0] = ci + 20;
@@ -118,7 +118,7 @@ void exibirTab(Tabela *tab, int ci, int li){
 	for(i = ci + 1; i < vetor[3]; i++){
 		gotoxy(i, li);
 		if(i == vetor[0] || i == vetor[1] || i == vetor[2])
-			printf("%c", 203); // junção de colunas
+			printf("%c", 203); // junï¿½ï¿½o de colunas
 		else
 			printf("%c", 205); // linha horizontal
 	}
@@ -127,7 +127,7 @@ void exibirTab(Tabela *tab, int ci, int li){
 
 	i = li + 1;
 
-	// cabeçalho
+	// cabeï¿½alho
 	gotoxy(ci, i);         printf("%c", 186); // borda esquerda
 	gotoxy(vetor[0], i);   printf("%c", 186);
 	gotoxy(vetor[1], i);   printf("%c", 186);
@@ -154,18 +154,18 @@ void exibirTab(Tabela *tab, int ci, int li){
 
 	i++;
 
-	// linha divisória
+	// linha divisï¿½ria
 	gotoxy(ci, i);
-	printf("%c", 204); // junção esquerda
+	printf("%c", 204); // junï¿½ï¿½o esquerda
 	for(j = ci + 1; j < vetor[3]; j++){
 		gotoxy(j, i);
 		if(j == vetor[0] || j == vetor[1] || j == vetor[2])
-			printf("%c", 206); // junção de colunas
+			printf("%c", 206); // junï¿½ï¿½o de colunas
 		else
 			printf("%c", 205); // linha horizontal
 	}
 	gotoxy(vetor[3], i);
-	printf("%c", 185); // junção direita
+	printf("%c", 185); // junï¿½ï¿½o direita
 
 	// linhas de dados
 	while(tab != NULL){
@@ -221,7 +221,7 @@ void exibirTab(Tabela *tab, int ci, int li){
 	for(j = ci + 1; j < vetor[3]; j++){
 		gotoxy(j, i);
 		if(j == vetor[0] || j == vetor[1] || j == vetor[2])
-			printf("%c", 202); // divisões de colunas
+			printf("%c", 202); // divisï¿½es de colunas
 		else
 			printf("%c", 205); // linha horizontal
 	}
