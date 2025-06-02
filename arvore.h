@@ -28,7 +28,8 @@ void exibirArv(Tree *raiz, int n){
 	if(raiz!=NULL){
 		n++;
 		exibirArv(raiz->dir, n);
-		for(int i=0; i<5*n; i++)
+		int i=0;
+		for(; i<5*n; i++)
 			printf(" ");
 		if(raiz->frequencia==0)
         	printf("(%d)\n", raiz->simbolo);
