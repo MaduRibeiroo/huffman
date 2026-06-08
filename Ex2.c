@@ -1,201 +1,189 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <conio2.h>
-#include <ctype.h>
 
-#include "layout.h"
-#include "arvore.h"
 #include "tabela2.h"
 
-#define TF 200
+#define TF 1000
+struct TpTree
+{
+    int simbolo;
+    struct TpTree *esq, *dir;
+};
+typedef struct TpTree Tree;
 
-char Menu(){
-	int c,l;
-	char op;
-	do
-	{
-		LayoutMenu();
-		gotoxy(25,3);
-		printf("#  #  MENU  #  #");
-		c=3;
-		l=7;
-		gotoxy(c,l);
-		printf("[A] - Exibir tabela de palavras");
-		l+=3;
-		gotoxy(c,l);
-		printf("[B] - Exibir arvore");
-		l+=3;
-		gotoxy(c,l);
-		printf("[C] - Ver frase decodificada");
-		l+=3;
-		gotoxy(c,l);
-		printf("[D] - Ver frase codificada");
-		l+=3;
-		gotoxy(c,l);
-		printf("[E] - Exibir arvore em pe");
-		l+=3;
-		gotoxy(c,l);
-		printf("[ESC] - Sair");
-		l=27;
-		gotoxy(c,l);
-		printf("OPCAO: ");
-		fflush(stdin);
-		op = toupper(getche());
-	}while(op!='A' && op!='B' && op!='C' && op!='D'  && op!='E' && op!=27 );
-	return op;
+void initT(Tree **raiz)
+{
+    *raiz = NULL;
 }
 
-// Lê os registros do arquivo e monta a tabela de palavras
-void montarTab(Tabela **tab){
-    FILE *ptr = fopen("registro.dat","rb");
-    Registro reg;
-    fread(&reg, sizeof(Registro), 1, ptr);
-    while(!feof(ptr)){
-        inserirTabelaOrd(&*tab, reg);
-        fread(&reg, sizeof(Registro), 1, ptr);
+void novoNo(Tree **tree)
+{
+    *tree = (Tree*)malloc(sizeof(Tree));
+    (*tree)->esq = NULL;
+    (*tree)->dir = NULL;
+    (*tree)->simbolo = -1;
+}
+
+void excluirArvore(Tree **raiz)
+{
+    if(*raiz != NULL)
+    {
+        excluirArvore(&((*raiz)->esq));
+        excluirArvore(&((*raiz)->dir));
+        free(*raiz);
+        *raiz = NULL;
     }
-    fclose(ptr);
-
 }
 
-// Constrói a árvore de Huffman a partir da tabela de códigos
-void montarArv(Tree **raiz,Tabela *tab){
-	int i;
-	Tree *aux;
-	novoNo(&*raiz);
-	while(tab != NULL){
-		aux = *raiz;
-		for(i=0;i<strlen(tab->reg.cod);i++){
-			if(tab->reg.cod[i]=='0'){
-				if(aux->esq==NULL)
-					novoNo(&(aux->esq));
-				aux = aux->esq;
-			}
-			else{
-				if(aux->dir==NULL)
-					novoNo(&(aux->dir));
-				aux = aux->dir;
-			}
-		}
-		aux->simbolo = tab->reg.simb;
-		tab = tab->prox;
-	}
+char carregarTabela(Tabela **tab, char nomeArquivo[])
+{
+    FILE *ptr;
+    Registro reg;
+    char abriu;
+
+    abriu = 0;
+    ptr = fopen(nomeArquivo, "rb");
+    if(ptr != NULL)
+    {
+        abriu = 1;
+        while(fread(&reg, sizeof(Registro), 1, ptr) == 1)
+            inserirRegistroTabela(&*tab, reg);
+        fclose(ptr);
+    }
+    return abriu;
 }
 
+void inserirCodigoArvore(Tree **raiz, char codigo[], int simbolo)
+{
+    int i;
+    Tree *aux;
 
-// Converte um byte (8 bis) em uma string binária de 8 caracteres
-void pegarCodigo(char cod[],byte b){
-	cod[0]=b.bit.b7+48;
-	cod[1]=b.bit.b6+48;
-	cod[2]=b.bit.b5+48;
-	cod[3]=b.bit.b4+48;
-	cod[4]=b.bit.b3+48;
-	cod[5]=b.bit.b2+48;
-	cod[6]=b.bit.b1+48;
-	cod[7]=b.bit.b0+48;
+    if(*raiz == NULL)
+        novoNo(&*raiz);
+
+    aux = *raiz;
+    for(i = 0; codigo[i] != '\0'; i++)
+    {
+        if(codigo[i] == '0')
+        {
+            if(aux->esq == NULL)
+                novoNo(&(aux->esq));
+            aux = aux->esq;
+        }
+        else
+        {
+            if(aux->dir == NULL)
+                novoNo(&(aux->dir));
+            aux = aux->dir;
+        }
+    }
+    aux->simbolo = simbolo;
 }
 
-// Remove espaços em branco do final da string/frase
-void remove(char frase[]){
-	int i;
-	for(i=strlen(frase)-1;frase[i]==' ';i--);
-	frase[i+1]='\0';
+void montarArvorePorCodigos(Tree **raiz, Tabela *tab)
+{
+    while(tab != NULL)
+    {
+        inserirCodigoArvore(&*raiz, tab->reg.cod, tab->reg.simb);
+        tab = tab->prox;
+    }
 }
 
-// Lê o arquivo binário de código e decodifica a mensagem usando a árvore de Huffman
-void decodificarHuffman(Tree *raiz, Tabela *tab, char  frase[TF]){
-	Tree *aux;
-	Tabela *tabAux;
-	char codigo[TF];
-	int i;
-	FILE *ptr=fopen("codigo.dat","rb");
-	byte Byte;
-	codigo[8]='\0';
-	fread(&Byte,sizeof(char),1,ptr);
-	aux=raiz;
-	while(!feof(ptr)){
-		pegarCodigo(codigo, Byte);
-		printf("%s  ",codigo);
-		for(i=0;i<8;i++){
-			if(codigo[i]=='0')
-				aux = aux->esq;
-			else
-				aux = aux->dir;
-			if(aux->esq == NULL && aux->dir ==NULL){
-				buscarSimbolo(tab, aux->simbolo , &tabAux);
-				strcat(frase, tabAux->reg.palavra);
-				aux = raiz;
-			}
-		}
-		fread(&Byte,sizeof(char),1,ptr);
-	}
-	remove(frase);
-	printf("\n\n%s",frase);
-    fclose(ptr);
+void concatenarPalavra(char frase[], char palavra[])
+{
+    int i, j;
+
+    i = strlen(frase);
+    j = 0;
+    while(palavra[j] != '\0' && i < TF - 1)
+    {
+        frase[i] = palavra[j];
+        i++;
+        j++;
+    }
+    frase[i] = '\0';
 }
 
-void executar(){
-	char op,frase[TF];
-	Tabela *tab;
-	Tree *raiz;
-	init(&tab);
-	initT(&raiz);
-	montarTab(&tab);
-	montarArv(&raiz,tab);
-	strcpy(frase,"");
-	decodificarHuffman(raiz,tab,frase);
-	do{
-		op=Menu();
-		switch(op){
-			case 'A':
-				system("cls");
-				exibirTab(tab,1,1); //falta fazer
-				gotoxy(1,1);
-				fflush(stdin);
-				getch();
-				break;
-			case 'B':
-				system("cls");
-				exibirArv(raiz,-1);
-				gotoxy(1,1);
-				fflush(stdin);
-				getch();
-				break;
-			case 'C':
-				system("cls");
-				printf("A frase decodificada foi:\n %s\n ",frase);
-				montarBytes();
-				exibirTab(tab,1,4); //aqui
-				gotoxy(1,1);
-				fflush(stdin);
-				getch();
-				break;
-			case 'D':
-				system("cls");
-				montarBytes();
-				exibirTab(tab,1,4); //aqui
-				gotoxy(1,1);
-				fflush(stdin);
-				getch();
-				break;
-			case 'E':
-				system("cls");
-				exibirEmPe(raiz,1,1);
-				gotoxy(1,1);
-				fflush(stdin);
-				getch();
-				break;
-		}
-			
-	}while(op!=27);
-	excluirTab(&tab);
-	excluirArv(&raiz);
+char decodificarFrase(Tree *raiz, Tabela *tab, char nomeArquivo[], char frase[])
+{
+    FILE *ptr;
+    Byte byteLido;
+    Tree *aux;
+    Tabela *linha;
+    char bits[9], deuCerto;
+    int i;
+
+    deuCerto = 0;
+    ptr = fopen(nomeArquivo, "rb");
+    if(ptr != NULL)
+    {
+        deuCerto = 1;
+        frase[0] = '\0';
+        aux = raiz;
+        while(fread(&(byteLido.num), sizeof(unsigned char), 1, ptr) == 1 && deuCerto == 1)
+        {
+            byteParaBits(byteLido, bits);
+            i = 0;
+            while(i < 8 && deuCerto == 1)
+            {
+                if(bits[i] == '0')
+                    aux = aux->esq;
+                else
+                    aux = aux->dir;
+
+                if(aux == NULL)
+                    deuCerto = 0;
+                else
+                {
+                    if(aux->esq == NULL && aux->dir == NULL)
+                    {
+                        if(buscarSimbolo(tab, aux->simbolo, &linha) == 1)
+                        {
+                            concatenarPalavra(frase, linha->reg.palavra);
+                            aux = raiz;
+                        }
+                        else
+                            deuCerto = 0;
+                    }
+                }
+                i++;
+            }
+        }
+        fclose(ptr);
+    }
+    return deuCerto;
 }
 
+void executar()
+{
+    Tabela *tab;
+    Tree *raiz;
+    char frase[TF];
 
-int main(){
-	executar();
-	return 0;
+    initTabela(&tab);
+    initT(&raiz);
+
+    if(carregarTabela(&tab, "registro.dat") == 1)
+    {
+        montarArvorePorCodigos(&raiz, tab);
+        if(decodificarFrase(raiz, tab, "codificado.dat", frase) == 1)
+        {
+            exibirTabela(tab);
+            printf("\nFrase decodificada:\n%s\n", frase);
+        }
+        else
+            printf("Nao foi possivel decodificar o arquivo codificado.dat.\n");
+    }
+    else
+        printf("Nao foi possivel abrir o arquivo registro.dat.\n");
+
+    excluirTabela(&tab);
+    excluirArvore(&raiz);
 }
 
+int main()
+{
+    executar();
+    return 0;
+}
